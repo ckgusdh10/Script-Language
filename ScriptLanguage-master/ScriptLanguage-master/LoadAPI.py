@@ -17,6 +17,11 @@ def userURIBuilder2(server,**user):
     for key in user.keys():
         str += key + "=" + user[key] + "&"
     return str
+def userURIBuilder4(server,**user):
+    str = "https://" + server + "/openapi/service/CorpSvc/getSecnIssuInfoStock?"
+    for key in user.keys():
+        str += key + "=" + user[key] + "&"
+    return str
 def userURIBuilder3(server,**user):
     str = "https://" + server + "/openapi/service/FnTermSvc/getFinancialTermMeaning?"
     for key in user.keys():
@@ -32,7 +37,6 @@ def getInfoDataFromname(find_key):
         connectOpenAPIServer()
     find_key = urllib.parse.quote(find_key)
     uri = userURIBuilder(server, issucoNm=find_key, numOfRows=str(10000), ServiceKey=regKey)
-    # uri = userURIBuilder(server, key=regKey, query='%20', display="1", start="1", target="book_adv", d_isbn=isbn)
     conn.request("GET", uri)
 
     req = conn.getresponse()
@@ -40,7 +44,6 @@ def getInfoDataFromname(find_key):
     if int(req.status) == 200:
         infoData = req.read().decode('utf-8')
         print("Info data downloading complete!")
-        #return extractInfoData(infoData)
         return LoadInfoData(infoData)
     else:
         print("OpenAPI request has been failed!! please retry")
@@ -50,10 +53,8 @@ def getInfoFromNum(find_key):
     global server, regKey, conn
     if conn == None:
         connectOpenAPIServer()
-    #find_key = urllib.parse.quote(find_key)
     uri = userURIBuilder2(server, issucoCustno=find_key, ServiceKey=regKey)
     conn.request("GET", uri)
-
     req = conn.getresponse()
     print(req.status)
     if int(req.status) == 200:
@@ -61,6 +62,19 @@ def getInfoFromNum(find_key):
         print("Info data downloading complete!")
 
         return LoadInfoData2(infoData)
+    else:
+        print("OpenAPI request has been failed!! please retry")
+        return None
+def getStockFromNum(find_key):
+    global server, regKey, conn
+    if conn == None:
+        connectOpenAPIServer()
+    uri = userURIBuilder4(server, issucoCustno=find_key, ServiceKey=regKey)
+    conn.request("GET", uri)
+    req = conn.getresponse()
+    if int(req.status) == 200:
+        infoData = req.read().decode('utf-8')
+        return LoadInfoData4(infoData)
     else:
         print("OpenAPI request has been failed!! please retry")
         return None
@@ -90,18 +104,21 @@ def LoadInfoData(infoData):
     response = parseData.childNodes
     headerNbody = response[0].childNodes
     body = headerNbody[1].childNodes
-    items = body[0].childNodes
-    for item in items:
-        issucoCustno = item.childNodes[0]
-        issucoCustnoData = issucoCustno.childNodes[0].data
-        issucoNm = item.childNodes[1]
-        issucoNmData = issucoNm.childNodes[0].data
-        if item.childNodes.length == 3:
-            listNm = item.childNodes[2]
-            listNmData = listNm.childNodes[0].data
-            print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData, "listNm", listNmData)
-        else:
-            print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData)
+    try:
+        items = body[0].childNodes
+        for item in items:
+            issucoCustno = item.childNodes[0]
+            issucoCustnoData = issucoCustno.childNodes[0].data
+            issucoNm = item.childNodes[1]
+            issucoNmData = issucoNm.childNodes[0].data
+            if item.childNodes.length == 3:
+                listNm = item.childNodes[2]
+                listNmData = listNm.childNodes[0].data
+                print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData, "listNm", listNmData)
+            else:
+                print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData)
+    except:
+        print("해당 발행번호에 대한 정보가 존재하지 않습니다.")
     conn.close()
 
 def LoadInfoData2(infoData):
@@ -110,17 +127,20 @@ def LoadInfoData2(infoData):
     response = parseData.childNodes
     headerNbody = response[0].childNodes
     body = headerNbody[1].childNodes
-    item = body[0].childNodes
-    for ele in item:
-        if ele.localName == 'engCustNm':
-            engCustNmData = ele.childNodes[0].data
-        if ele.localName == 'ceoNm':
-            ceoNmData = ele.childNodes[0].data
-        if ele.localName == 'founDt':
-            founDtData = ele.childNodes[0].data
-        if ele.localName == 'totalStkCnt':
-            totalStkCntData = ele.childNodes[0].data
-    print("기업명: ",engCustNmData, "\nCeo: ", ceoNmData, "\n설립일: ", founDtData, "\n총 발행 주식 수: ", totalStkCntData)
+    try:
+        item = body[0].childNodes
+        for ele in item:
+            if ele.localName == 'engCustNm':
+                engCustNmData = ele.childNodes[0].data
+            if ele.localName == 'ceoNm':
+                ceoNmData = ele.childNodes[0].data
+            if ele.localName == 'founDt':
+                founDtData = ele.childNodes[0].data
+            if ele.localName == 'totalStkCnt':
+                totalStkCntData = ele.childNodes[0].data
+        print("기업명: ",engCustNmData, "\nCeo: ", ceoNmData, "\n설립일: ", founDtData, "\n총 발행 주식 수: ", totalStkCntData)
+    except:
+        print("해당 발행번호에 대한 정보가 존재하지 않습니다.")
     conn.close()
 
 def LoadInfoData3(infoData):
@@ -136,4 +156,19 @@ def LoadInfoData3(infoData):
         ksdFnceDictDescContent = item.childNodes[1]
         ksdFnceDictDescContentData = ksdFnceDictDescContent.childNodes[0].data
         print("용어명: ", fnceDictNmData, "\n설명: ", ksdFnceDictDescContentData)
+    conn.close()
+
+def LoadInfoData4(infoData):
+    global conn
+    parseData = parseString(infoData)
+    response = parseData.childNodes
+    headerNbody = response[0].childNodes
+    body = headerNbody[1].childNodes
+    items = body[0].childNodes
+    for item in items:
+        caltotMartTpcd = item.childNodes[0]
+        caltotMartTpcdData = caltotMartTpcd.childNodes[0].data
+        stkKacd = item.childNodes[4]
+        stkKacdData = stkKacd.childNodes[0].data
+        print("상장구분명: ", caltotMartTpcdData, "\n주식종류명: ", stkKacdData)
     conn.close()
