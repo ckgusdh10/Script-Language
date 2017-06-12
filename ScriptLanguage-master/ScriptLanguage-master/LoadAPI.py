@@ -104,21 +104,20 @@ def LoadInfoData(infoData):
     response = parseData.childNodes
     headerNbody = response[0].childNodes
     body = headerNbody[1].childNodes
-    try:
-        items = body[0].childNodes
-        for item in items:
-            issucoCustno = item.childNodes[0]
-            issucoCustnoData = issucoCustno.childNodes[0].data
-            issucoNm = item.childNodes[1]
-            issucoNmData = issucoNm.childNodes[0].data
-            if item.childNodes.length == 3:
-                listNm = item.childNodes[2]
-                listNmData = listNm.childNodes[0].data
-                print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData, "listNm", listNmData)
-            else:
-                print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData)
-    except:
-        print("해당 발행번호에 대한 정보가 존재하지 않습니다.")
+
+    items = body[0].childNodes
+    for item in items:
+        issucoCustno = item.childNodes[0]
+        issucoCustnoData = issucoCustno.childNodes[0].data
+        issucoNm = item.childNodes[1]
+        issucoNmData = issucoNm.childNodes[0].data
+        if item.childNodes.length == 3:
+            listNm = item.childNodes[2]
+            listNmData = listNm.childNodes[0].data
+            print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData, "listNm", listNmData)
+        else:
+            print("발행번호: ", issucoCustnoData, "\n기업이름: ", issucoNmData)
+
     conn.close()
 
 def LoadInfoData2(infoData):
@@ -164,11 +163,14 @@ def LoadInfoData4(infoData):
     response = parseData.childNodes
     headerNbody = response[0].childNodes
     body = headerNbody[1].childNodes
-    items = body[0].childNodes
-    for item in items:
-        caltotMartTpcd = item.childNodes[0]
-        caltotMartTpcdData = caltotMartTpcd.childNodes[0].data
-        stkKacd = item.childNodes[4]
-        stkKacdData = stkKacd.childNodes[0].data
+    try:
+        items = body[0].childNodes
+        for item in items:
+            caltotMartTpcd = item.childNodes[0]
+            caltotMartTpcdData = caltotMartTpcd.childNodes[0].data
+            stkKacd = item.childNodes[4]
+            stkKacdData = stkKacd.childNodes[0].data
         print("상장구분명: ", caltotMartTpcdData, "\n주식종류명: ", stkKacdData)
+    except:
+        print("해당 발행번호에 대한 정보가 존재하지 않습니다.")
     conn.close()

@@ -1,6 +1,7 @@
 loopFlag = 1
 from LoadAPI import *
 from GUI import *
+
 def printMenu():
     print("========Menu==========")
     print("발행번호 검색:  g")
@@ -21,7 +22,8 @@ def launcherFunction(menu):
         getInfoFromKey(name)
     else:
         print ("error : unknow menu key")
-
+def findCust(name):
+    getInfoDataFromname(name)
 def QuitBookMgr():
     global loopFlag
     loopFlag = 0
