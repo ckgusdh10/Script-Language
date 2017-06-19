@@ -187,3 +187,7 @@ def start():
     window.mainloop()
 
 check = False
+
+
+
+

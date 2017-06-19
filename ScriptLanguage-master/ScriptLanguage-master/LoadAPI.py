@@ -149,7 +149,6 @@ def LoadInfoData2(infoData,findkey):
                 totalStkCntData = ele.childNodes[0].data
                 #dic["data"].append(totalStkCntData)
                 dic["4.발행 주식 수"]=(totalStkCntData)
-        print("기업명: ",engCustNmData, "\nCeo: ", ceoNmData, "\n설립일: ", founDtData, "\n총 발행 주식 수: ", totalStkCntData)
     except:
         print("해당 발행번호에 대한 정보가 존재하지 않습니다.")
     conn.close()
@@ -163,7 +162,7 @@ def LoadInfoData3(infoData):
     headerNbody = response[0].childNodes
     body = headerNbody[1].childNodes
     items = body[0].childNodes
-
+    dic = {}
     for item in items:
         fnceDictNm = item.childNodes[0]
         fnceDictNmData = fnceDictNm.childNodes[0].data
@@ -202,7 +201,6 @@ def LoadInfoData4(infoData):
                 #dic["data"].append(caltotMartTpcdData)
                 dic["6.상장구분명"]=(caltotMartTpcdData)
 
-        print("상장구분명: ", caltotMartTpcdData, "\n주식종류명: ", stkKacdData)
     except:
         print("해당 발행번호에 대한 정보가 존재하지 않습니다.")
     conn.close()
